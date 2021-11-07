@@ -1,11 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import FormikPostUploader from './FormikPostUploader';
+import { Formik } from 'formik';
 
 const AddNewPost = () => {
 	return (
 		<View style={styles.container}>
 			<Header />
+			<FormikPostUploader />
 		</View>
 	);
 };
