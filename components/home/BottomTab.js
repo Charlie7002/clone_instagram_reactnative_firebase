@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Divider } from 'react-native-elements';
 
 export const bottomTabIcons = [
@@ -43,7 +43,13 @@ const BottomTab = ({ icons }) => {
 				source={{
 					uri: activeTab === icon.name ? icon.active : icon.inactive,
 				}}
-				style={styles.icon}
+				style={[
+					styles.icon,
+					icon.name === 'Profile' ? styles.profilePic() : 'null',
+					activeTab === 'Profile' && icon.name === activeTab
+						? styles.profilePic(activeTab)
+						: null,
+				]}
 			/>
 		</TouchableOpacity>
 	);
@@ -66,7 +72,7 @@ const styles = StyleSheet.create({
 	wrapper: {
 		position: 'absolute',
 		width: '100%',
-		bottom: '3%',
+		bottom: 0,
 		zIndex: 999,
 		backgroundColor: 'black',
 	},
@@ -80,4 +86,9 @@ const styles = StyleSheet.create({
 		width: 30,
 		height: 30,
 	},
+	profilePic: (activeTab = '') => ({
+		borderRadius: 50,
+		borderWidth: activeTab === 'Profile' ? 2 : 0,
+		borderColor: '#fff',
+	}),
 });
