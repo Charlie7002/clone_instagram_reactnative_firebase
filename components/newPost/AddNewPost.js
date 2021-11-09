@@ -2,20 +2,23 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import FormikPostUploader from './FormikPostUploader';
-import { Formik } from 'formik';
 
-const AddNewPost = () => {
+const AddNewPost = ({ navigation }) => {
 	return (
 		<View style={styles.container}>
-			<Header />
-			<FormikPostUploader />
+			<Header navigation={navigation} />
+			<FormikPostUploader navigation={navigation} />
 		</View>
 	);
 };
 
-const Header = () => (
+const Header = ({ navigation }) => (
 	<View style={styles.headerContainer}>
-		<TouchableOpacity>
+		<TouchableOpacity
+			onPress={() => {
+				navigation.goBack();
+			}}
+		>
 			<Ionicons name="md-chevron-back-sharp" size={30} color="white" />
 		</TouchableOpacity>
 		<Text style={styles.headerText}>NEW POST</Text>

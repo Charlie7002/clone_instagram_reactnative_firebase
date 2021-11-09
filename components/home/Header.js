@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
-const Header = () => {
+const Header = ({ navigation }) => {
 	return (
 		<View style={styles.container}>
 			<TouchableOpacity>
@@ -13,7 +13,7 @@ const Header = () => {
 			</TouchableOpacity>
 
 			<View style={styles.iconsContainer}>
-				<TouchableOpacity>
+				<TouchableOpacity onPress={() => navigation.push('NewPostScreen')}>
 					<AntDesign
 						name="plussquareo"
 						size={24}

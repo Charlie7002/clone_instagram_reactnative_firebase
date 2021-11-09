@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button, Image, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Divider } from 'react-native-elements/dist/divider/Divider';
 import * as yup from 'yup';
+import validUrl from 'valid-url';
 
 const placeHolder_img = 'https://picsum.photos/300';
 
@@ -11,13 +12,14 @@ let upLoadPostSchema = yup.object().shape({
 	caption: yup.string().max(200).required(),
 });
 
-const FormikPostUploader = () => {
+const FormikPostUploader = ({ navigation }) => {
 	const [thumbnailUrl, setThumbnailUrl] = useState(placeHolder_img);
 	return (
 		<Formik
 			initialValues={{ caption: '', imageUrl: '' }}
 			onSubmit={values => {
 				console.log(values);
+				navigation.goBack();
 			}}
 			validationSchema={upLoadPostSchema}
 		>
@@ -39,7 +41,9 @@ const FormikPostUploader = () => {
 					>
 						<Image
 							source={{
-								uri: thumbnailUrl ? thumbnailUrl : placeHolder_img,
+								uri: validUrl.isUri(thumbnailUrl)
+									? thumbnailUrl
+									: placeHolder_img,
 							}}
 							style={{ width: 100, height: 100 }}
 						/>
