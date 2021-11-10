@@ -1,20 +1,20 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import LogInForm from '../components/logIn/LogInForm';
+import SignUpForm from '../components/signUp/SignUpForm';
 
-const LogInScreen = ({ navigation }) => (
+const SignUpScreen = ({ navigation }) => (
 	<View style={styles.container}>
 		<View style={styles.logoContainer}>
 			<Image
 				source={require('../assets/instalogo.png')}
 				style={{ height: 100, width: 100 }}
 			/>
-			<LogInForm navigation={navigation} />
 		</View>
+		<SignUpForm navigation={navigation} />
 	</View>
 );
 
-export default LogInScreen;
+export default SignUpScreen;
 
 const styles = StyleSheet.create({
 	container: {
