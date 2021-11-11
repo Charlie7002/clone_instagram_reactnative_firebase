@@ -10,7 +10,7 @@ import {
 	Alert,
 } from 'react-native';
 
-import firebase from '../../firebase';
+import { firebase, db } from '../../firebase';
 
 import * as yup from 'yup';
 import validator from 'email-validator';
@@ -30,7 +30,22 @@ const LogInForm = ({ navigation }) => {
 			await firebase.auth().signInWithEmailAndPassword(email, password);
 			console.log('login cool', email, password);
 		} catch (error) {
-			Alert.alert(error.message);
+			Alert.alert(
+				'😕',
+				error.message + '\n\n... What would you like to do next ? ',
+				[
+					{
+						text: 'OK',
+						onPress: () => console.log('ok'),
+						style: 'cancel',
+					},
+					{
+						text: 'Sign Up',
+						onPress: () => navigation.push('SignUpScreen'),
+						style: 'Sign Up',
+					},
+				],
+			);
 		}
 	};
 
@@ -69,7 +84,7 @@ const LogInForm = ({ navigation }) => {
 								placeholder="Phone number, username or email"
 								placeholderTextColor="#444"
 								autoCapitalize="none"
-								keyboardType="email-adress"
+								// keyboardType="email-adress"
 								textContentType="emailAdress"
 								autoFocus={true}
 								onChangeText={handleChange('email')}
