@@ -38,12 +38,14 @@ const SignUpForm = ({ navigation }) => {
 				.auth()
 				.createUserWithEmailAndPassword(email, password);
 			console.log('fire create coool' + email + password);
-			db.collection('users').add({
-				owner_uid: authUser.user.uid,
-				username: username,
-				email: authUser.user.email,
-				profile_picture: await getRandomProfilePicture(),
-			});
+			db.collection('users')
+				.doc(authUser.user.email)
+				.set({
+					owner_uid: authUser.user.uid,
+					username: username,
+					email: authUser.user.email,
+					profile_picture: await getRandomProfilePicture(),
+				});
 		} catch (error) {
 			Alert.alert('😕... ' + error.message);
 		}
@@ -99,6 +101,7 @@ const SignUpForm = ({ navigation }) => {
 								{
 									borderColor:
 										values.username.length > 2 ||
+										values.username.length === 0 ||
 										validator.validate(values.username)
 											? 'lightgrey'
 											: 'red',
@@ -109,7 +112,7 @@ const SignUpForm = ({ navigation }) => {
 								placeholder="Username"
 								placeholderTextColor="#444"
 								autoCapitalize="none"
-								keyboardType="email-adress"
+								keyboardType="default"
 								textContentType="username"
 								autoFocus={true}
 								onChangeText={handleChange('username')}
@@ -122,8 +125,8 @@ const SignUpForm = ({ navigation }) => {
 								styles.inputField,
 								{
 									borderColor:
-										1 > values.password.length ||
-										values.password.length >= 6 ||
+										values.password.length === 0 ||
+										values.password.length > 5 ||
 										validator.validate(values.password)
 											? 'lightgrey'
 											: 'red',

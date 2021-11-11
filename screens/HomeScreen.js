@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import BottomTab, { bottomTabIcons } from '../components/home/BottomTab';
 import Header from '../components/home/Header';
 import Post from '../components/home/Post';
 import Stories from '../components/home/Stories';
 import { POSTS } from '../data/posts';
+import { db } from '../firebase';
 
 export default HomeScreen = ({ navigation }) => {
+	useEffect(() => {
+		db.collectionGroup('posts').onSnapshot(snapshot => {
+			console.log(snapshot.docs.map(doc => doc.data()));
+		});
+	}, []);
 	return (
 		<View style={styles.container}>
 			<Header navigation={navigation} />
