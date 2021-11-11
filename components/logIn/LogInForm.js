@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
 	Pressable,
 	StyleSheet,
@@ -9,20 +10,11 @@ import {
 	Alert,
 } from 'react-native';
 
+import firebase from '../../firebase';
+
 import * as yup from 'yup';
 import validator from 'email-validator';
 import { Formik } from 'formik';
-
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
-
-import {
-	getAuth,
-	onAuthStateChanged,
-	FacebookAuthProvider,
-	signInWithCredential,
-} from 'firebase/auth';
 
 const LogInForm = ({ navigation }) => {
 	const LogInSchema = yup.object().shape({
