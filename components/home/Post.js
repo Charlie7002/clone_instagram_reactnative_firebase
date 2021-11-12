@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Divider } from 'react-native-elements';
+import { firebase, db } from '../../firebase';
 import { POSTS } from '../../data/posts';
 
 const ICONS = [
@@ -27,13 +28,42 @@ const ICONS = [
 ];
 
 const Post = ({ post }) => {
+	console.log(post);
+	const handleLike = post => {
+		//includes cherche dans array et renvoi tru||false
+		const currentLikeStatus = !post.likes_by_users.includes(
+			firebase.auth().currentUser.email,
+		);
+		db.collection('users')
+			.doc(post.owner_email)
+			.collection('posts')
+			.doc(post.id)
+			.update({
+				likes_by_users: currentLikeStatus
+					? firebase.firestore.FieldValue.arrayUnion(
+							firebase.auth().currentUser.email,
+					  )
+					: firebase.firestore.FieldValue.arrayRemove(
+							firebase.auth().currentUser.email,
+					  ),
+			})
+			.then(() => {
+				console.log('cest bien update');
+			})
+			.catch(error => {
+				console.log('error:' + error);
+			});
+	};
+
+	useEffect(() => {}, [handleLike]);
+
 	return (
 		<View style={{ marginBottom: 30 }}>
 			<Divider witdh={1} orientation="vertical" />
 			<PostHeader post={post} />
 			<PostImage post={post} />
 			<View style={{ marginHorizontal: 15, marginTop: 10 }}>
-				<PostFooter post={post} />
+				<PostFooter post={post} handleLike={handleLike} />
 				<Likes post={post} />
 				<Caption post={post} />
 				{post.comments.length > 0 && <CommentsSection post={post} />}
@@ -57,7 +87,7 @@ const PostHeader = ({ post: { user, profile_picture } }) => (
 				alignItems: 'center',
 			}}
 		>
-			<Image style={styles.img} source={profile_picture} />
+			<Image style={styles.img} source={{ uri: profile_picture }} />
 			<Text style={{ color: 'white', marginLeft: 7, fontWeight: '700' }}>
 				{user}
 			</Text>
@@ -80,10 +110,22 @@ const PostImage = ({ post: { imageUrl } }) => (
 	</View>
 );
 
-const PostFooter = () => (
+const PostFooter = ({ post, handleLike }) => (
 	<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 		<View style={styles.leftFooterIconContainer}>
-			<Icon imgStyle={styles.footerIcon} imgUrl={ICONS[0].imageUrl} />
+			<TouchableOpacity onPress={() => handleLike(post)}>
+				<Image
+					style={styles.footerIcon}
+					source={{
+						uri: post.likes_by_users.includes(
+							firebase.auth().currentUser.email,
+						)
+							? ICONS[0].likedImageUrl
+							: ICONS[0].imageUrl,
+					}}
+				/>
+			</TouchableOpacity>
+
 			<Icon imgStyle={styles.footerIcon} imgUrl={ICONS[1].imageUrl} />
 			<Icon imgStyle={styles.footerIcon} imgUrl={ICONS[2].imageUrl} />
 		</View>
@@ -99,10 +141,10 @@ const Icon = ({ imgStyle, imgUrl }) => (
 	</TouchableOpacity>
 );
 
-const Likes = ({ post: { likes } }) => (
+const Likes = ({ post: { likes_by_users } }) => (
 	<View style={{ flexDirection: 'row', marginTop: 4 }}>
 		<Text style={{ color: 'white', fontWeight: '600' }}>
-			{likes.toLocaleString('fr')} likes
+			{likes_by_users.length.toLocaleString('fr')} likes
 		</Text>
 	</View>
 );
@@ -119,9 +161,11 @@ const Caption = ({ post: { caption, user } }) => (
 const CommentsSection = ({ post: { comments } }) => (
 	<View style={{ marginTop: 5 }}>
 		<Text style={{ color: 'gray' }}>
-			{comments.length > 1
-				? `Voir les ${comments.length} commentaires`
-				: `Voir le commentaire`}
+			{comments && comments.length > 1
+				? `View all ${comments.length} comments`
+				: comments && comments.length === 1
+				? `View comment`
+				: ``}
 		</Text>
 		<Comments comments={comments} />
 	</View>
