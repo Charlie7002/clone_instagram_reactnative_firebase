@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import BottomTab, { bottomTabIcons } from '../components/home/BottomTab';
 import Header from '../components/home/Header';
@@ -8,17 +8,22 @@ import { POSTS } from '../data/posts';
 import { db } from '../firebase';
 
 export default HomeScreen = ({ navigation }) => {
+	const [posts, setPosts] = useState([]);
 	useEffect(() => {
-		db.collectionGroup('posts').onSnapshot(snapshot => {
-			console.log(snapshot.docs.map(doc => doc.data()));
-		});
+		db.collectionGroup('posts')
+			// .orderBy('createdAt', 'desc')
+			.onSnapshot(snapshot => {
+				setPosts(
+					snapshot.docs.map(post => ({ id: post.id, ...post.data() })),
+				);
+			});
 	}, []);
 	return (
 		<View style={styles.container}>
 			<Header navigation={navigation} />
 			<Stories />
 			<ScrollView>
-				{POSTS.map((post, i) => {
+				{posts.map((post, i) => {
 					return <Post key={i + Math.random()} post={post} />;
 				})}
 			</ScrollView>
