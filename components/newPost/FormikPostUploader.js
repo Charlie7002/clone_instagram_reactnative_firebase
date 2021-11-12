@@ -1,9 +1,10 @@
 import { ErrorMessage, Formik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Image, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Divider } from 'react-native-elements/dist/divider/Divider';
 import * as yup from 'yup';
 import validUrl from 'valid-url';
+import { db, firebase } from '../../firebase';
 
 const placeHolder_img = 'https://picsum.photos/300';
 
@@ -14,12 +15,57 @@ let upLoadPostSchema = yup.object().shape({
 
 const FormikPostUploader = ({ navigation }) => {
 	const [thumbnailUrl, setThumbnailUrl] = useState(placeHolder_img);
+	const [currentLoggedInUser, setCurrentLoggedUser] = useState(null);
+
+	const getUserName = () => {
+		console.log('shit');
+		const user = firebase.auth().currentUser;
+		const unsubscribe = db
+			.collection('users')
+			.where('owner_uid', '==', user.uid)
+			.limit(1)
+			.onSnapshot(snapshot =>
+				snapshot.docs.map(doc => {
+					setCurrentLoggedUser({
+						username: doc.data().username,
+						profilePicture: doc.data().profile_picture,
+					});
+					console.log(doc.data().profile_picture);
+				}),
+			);
+
+		return unsubscribe;
+	};
+
+	useEffect(() => {
+		getUserName();
+	}, []);
+
+	const uploadPostToFirebase = (imageUrl, caption) => {
+		const unsubscribe = db
+			.collection('users')
+			.doc(firebase.auth().currentUser.email)
+			.collection('posts')
+			.add({
+				imageUrl: imageUrl,
+				user: currentLoggedInUser.username,
+				profile_picture: currentLoggedInUser.profilePicture,
+				owner_uid: firebase.auth().currentUser.uid,
+				caption: caption,
+				createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+				likes: 0,
+				likes_by_users: [],
+				comments: [],
+			})
+			.then(() => navigation.goBack());
+		return unsubscribe;
+	};
+
 	return (
 		<Formik
 			initialValues={{ caption: '', imageUrl: '' }}
 			onSubmit={values => {
-				console.log(values);
-				navigation.goBack();
+				uploadPostToFirebase(values.imageUrl, values.caption);
 			}}
 			validationSchema={upLoadPostSchema}
 		>

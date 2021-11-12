@@ -32,12 +32,12 @@ const SignUpForm = ({ navigation }) => {
 		return data.results[0].picture.large;
 	};
 
-	const onSignup = async (email, password, username) => {
+	const onSignup = async (email, username, password) => {
 		try {
 			const authUser = await firebase
 				.auth()
 				.createUserWithEmailAndPassword(email, password);
-			console.log('fire create coool' + email + password);
+			console.log('fire create coool' + email + password + username);
 			db.collection('users')
 				.doc(authUser.user.email)
 				.set({
@@ -57,6 +57,9 @@ const SignUpForm = ({ navigation }) => {
 				initialValues={{ email: '', username: '', password: '' }}
 				onSubmit={values => {
 					onSignup(values.email, values.username, values.password);
+					console.log(
+						`email:${values.email}, username:${values.username}, password:${values.password}`,
+					);
 				}}
 				validationSchema={signUpSchema}
 				validateOnMount={true}
@@ -86,8 +89,8 @@ const SignUpForm = ({ navigation }) => {
 								placeholder="Phone number, username or email"
 								placeholderTextColor="#444"
 								autoCapitalize="none"
-								keyboardType="email-adress"
-								textContentType="emailAdress"
+								keyboardType="email-address"
+								textContentType="emailAddress"
 								autoFocus={true}
 								onChangeText={handleChange('email')}
 								onBlur={handleBlur('email')}

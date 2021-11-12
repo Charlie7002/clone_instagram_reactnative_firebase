@@ -84,8 +84,8 @@ const LogInForm = ({ navigation }) => {
 								placeholder="Phone number, username or email"
 								placeholderTextColor="#444"
 								autoCapitalize="none"
-								// keyboardType="email-adress"
-								textContentType="emailAdress"
+								keyboardType="email-address"
+								textContentType="emailAddress"
 								autoFocus={true}
 								onChangeText={handleChange('email')}
 								onBlur={handleBlur('email')}
